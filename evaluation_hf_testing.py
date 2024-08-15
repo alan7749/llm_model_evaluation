@@ -127,7 +127,7 @@ def eval(args, subject, model, tokenizer, dev_df, test_df):
         prompt_end = format_example(test_df, i, include_answer=False)
         train_prompt = gen_prompt(dev_df, subject, k)
         prompt = train_prompt + prompt_end
-
+        print(f'prompt: {prompt}')
         input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(model.device)
 
         while input_ids.shape[-1] > 2048:
@@ -137,7 +137,7 @@ def eval(args, subject, model, tokenizer, dev_df, test_df):
             input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(
                 model.device
             )
-
+        
         label = test_df.iloc[i, test_df.shape[1] - 1]
 
         logits = model(input_ids=input_ids).logits[0, -1]
@@ -159,7 +159,8 @@ def eval(args, subject, model, tokenizer, dev_df, test_df):
             .numpy()
         )
         pred = {0: "A", 1: "B", 2: "C", 3: "D"}[np.argmax(probs)]
-
+        print(f'pred: {pred}')
+        
         cor = pred == label
         cors.append(cor)
         all_preds.append(pred)
